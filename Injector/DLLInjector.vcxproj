@@ -141,14 +141,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DLLInjector.cpp" />
-    <ClCompile Include="Error.cpp" />
     <ClCompile Include="GetProcId.cpp" />
-    <ClCompile Include="ReadFile.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Error.h" />
     <ClInclude Include="GetProcId.h" />
-    <ClInclude Include="ReadFile.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

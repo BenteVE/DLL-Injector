@@ -21,21 +21,9 @@
     <ClCompile Include="GetProcId.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ReadFile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Error.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GetProcId.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ReadFile.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Error.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
