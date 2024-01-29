@@ -1,13 +1,3 @@
-/*
-    Project Settings:
-        - General => Advanced => Character Set => Use Multi-Byte Character Set
-
-
-    Notes:
-        - match the injector build (x64 or x86) with the target program and the DLL
-
-*/
-
 #include <iostream>
 #include <Windows.h>
 #include <string>
