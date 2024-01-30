@@ -14,7 +14,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
     switch (ul_reason_for_call)
     {
     case DLL_PROCESS_ATTACH:
-        FILE *stream; // An out parameter that will point to the reopened stream when the function returns.
+        FILE* stream; // An out parameter that will point to the reopened stream when the function returns.
 
         // Open console for debugging
         if (AllocConsole())
