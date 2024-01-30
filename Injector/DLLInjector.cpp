@@ -14,7 +14,7 @@
 #define tcout std::cout
 #endif
 
-LPTSTR ReadINI(LPCTSTR lpAppName, LPCTSTR lpKeyName)
+static LPTSTR ReadINI(LPCTSTR lpAppName, LPCTSTR lpKeyName)
 {
 	LPCTSTR lpFileName = TEXT(".\\conf.ini");
 	DWORD nSize = 255;
@@ -26,15 +26,26 @@ LPTSTR ReadINI(LPCTSTR lpAppName, LPCTSTR lpKeyName)
 	return lpReturnedString;
 }
 
+static void log_error(LPCTSTR error) {
+	tcout << TEXT("Error: ") << error << std::endl;
+}
+
+static void log(LPCTSTR message) {
+	tcout << TEXT("Log: ") << message << std::endl;
+}
+
 int main()
 {
-	// get the DLL 
 	LPTSTR dll = ReadINI(TEXT("DLL"), TEXT("PATH"));
 	LPTSTR dllPath = new TCHAR[MAX_PATH];
 	if (!GetFullPathName(dll, MAX_PATH, dllPath, nullptr))
 	{
-		tcout << L"Configuration Error: DLL not found" << std::endl;
+		log_error(TEXT("DLL not found"));
+		system("pause");
 		exit(1);
+	}
+	else {
+		log(TEXT("Found DLL"));
 	}
 
 	LPTSTR mode = ReadINI(TEXT("TARGET"), TEXT("MODE"));
@@ -49,7 +60,8 @@ int main()
 		}
 		catch (const std::exception&)
 		{
-			tcout << TEXT("Configuration Error: Invalid Process ID") << std::endl;
+			log_error(TEXT("Invalid Process ID in conf.ini"));
+			system("pause");
 			exit(1);
 		}
 		delete[] process_id;
@@ -65,48 +77,53 @@ int main()
 		delete[] window_title;
 	}
 	else {
-		tcout << TEXT("Configuration Error: Target settings invalid") << std::endl;
+		log_error(TEXT("invalid mode in conf.ini"));
+		system("pause");
 		exit(1);
 	}
 
 	delete[] mode;
 
-	tcout << TEXT("Acquired process ID") << std::endl;
+	log(TEXT("Acquired process ID"));
 
 	//open process with read and write permissions
 	HANDLE h_process = OpenProcess(PROCESS_ALL_ACCESS, NULL, processId);
 	if (!h_process)
 	{
-		tcout << TEXT("OpenProcess Error: Failed to open a handle to process") << std::endl;
+		log_error(TEXT("OpenProcess failed to acquire a handle to the process"));
+		system("pause");
 		exit(1);
 	}
-	tcout << TEXT("OpenProcess: Acquired process handle") << std::endl;
+	log(TEXT("OpenProcess acquired the process handle"));
 
 	//allocate memory in external process for path name (we don't need execute permissions)
 	void* allocated_memory = VirtualAllocEx(h_process, nullptr, MAX_PATH, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 	if (!allocated_memory)
 	{
-		tcout << TEXT("VirtualAllocEx Error: Failed to allocate memory") << std::endl;
+		log_error(TEXT("VirtualAllocEx failed to allocate memory in target application"));
+		system("pause");
 		exit(1);
 	}
-	tcout << TEXT("VirtualAllocEx: Allocated memory in target application") << std::endl;
+	log(TEXT("VirtualAllocEx allocated memory in target application"));
 
 	//write path in process memory
 	if (!WriteProcessMemory(h_process, allocated_memory, dllPath, MAX_PATH, nullptr))
 	{
-		tcout << TEXT("WriteProcessMemory Error: Failed to write process memory") << std::endl;
+		log_error(TEXT("WriteProcessMemory failed to write process memory"));
+		system("pause");
 		exit(1);
 	}
-	tcout << TEXT("WriteProcessMemory: DLL path written in memory of target application") << std::endl;
+	log(TEXT("WriteProcessMemory wrote DLL path in memory of target application"));
 
 	// create remote thread in target process that will call LoadLibrary (loc = address with path to DLL)
 	HANDLE h_thread = CreateRemoteThread(h_process, nullptr, NULL, LPTHREAD_START_ROUTINE(LoadLibrary), allocated_memory, NULL, nullptr);
 	if (!h_thread)
 	{
-		tcout << TEXT("CreateRemoteThread Error:Failed to create remote thread") << std::endl;
+		log_error(TEXT("CreateRemoteThread failed to create remote thread in target application"));
+		system("pause");
 		exit(1);
 	}
-	tcout << TEXT("CreateRemoteThread: Created remote thread in target application to run LoadLibrary and load the DLL") << std::endl;
+	log(TEXT("CreateRemoteThread created remote thread in target application to run LoadLibrary and load the DLL"));
 
 	// dll is loaded, program done, close handle
 	VirtualFreeEx(h_process, allocated_memory, NULL, MEM_RELEASE);
@@ -114,7 +131,7 @@ int main()
 
 	delete[] dll;
 
-	tcout << TEXT("Successfully injected") << std::endl;
+	log(TEXT("DLL injection successful"));
 	system("pause");
 	exit(0);
 }
