@@ -26,11 +26,13 @@ static LPTSTR ReadINI(LPCTSTR lpAppName, LPCTSTR lpKeyName)
 	return lpReturnedString;
 }
 
-static void log_error(LPCTSTR error) {
+static void log_error(LPCTSTR error)
+{
 	tcout << TEXT("Error: ") << error << std::endl;
 }
 
-static void log(LPCTSTR message) {
+static void log(LPCTSTR message)
+{
 	tcout << TEXT("Log: ") << message << std::endl;
 }
 
@@ -44,7 +46,8 @@ int main()
 		system("pause");
 		exit(1);
 	}
-	else {
+	else
+	{
 		log(TEXT("Found DLL"));
 	}
 
@@ -58,7 +61,7 @@ int main()
 		{
 			processId = std::stoi(process_id);
 		}
-		catch (const std::exception&)
+		catch (const std::exception &)
 		{
 			log_error(TEXT("Invalid Process ID in conf.ini"));
 			system("pause");
@@ -66,17 +69,20 @@ int main()
 		}
 		delete[] process_id;
 	}
-	else if (lstrcmp(mode, TEXT("PROCESS_NAME")) == 0) {
+	else if (lstrcmp(mode, TEXT("PROCESS_NAME")) == 0)
+	{
 		LPTSTR process_name = ReadINI(TEXT("TARGET"), mode);
 		processId = GetProcId(process_name);
 		delete[] process_name;
 	}
-	else if (lstrcmp(mode, TEXT("WINDOW_TITLE")) == 0) {
+	else if (lstrcmp(mode, TEXT("WINDOW_TITLE")) == 0)
+	{
 		LPTSTR window_title = ReadINI(TEXT("TARGET"), mode);
 		GetProcIdWindowTitle(window_title, processId);
 		delete[] window_title;
 	}
-	else {
+	else
+	{
 		log_error(TEXT("invalid mode in conf.ini"));
 		system("pause");
 		exit(1);
@@ -86,7 +92,7 @@ int main()
 
 	log(TEXT("Acquired process ID"));
 
-	//open process with read and write permissions
+	// open process with read and write permissions
 	HANDLE h_process = OpenProcess(PROCESS_ALL_ACCESS, NULL, processId);
 	if (!h_process)
 	{
@@ -96,8 +102,8 @@ int main()
 	}
 	log(TEXT("OpenProcess acquired the process handle"));
 
-	//allocate memory in external process for path name (we don't need execute permissions)
-	void* allocated_memory = VirtualAllocEx(h_process, nullptr, MAX_PATH, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
+	// allocate memory in external process for path name (we don't need execute permissions)
+	void *allocated_memory = VirtualAllocEx(h_process, nullptr, MAX_PATH, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 	if (!allocated_memory)
 	{
 		log_error(TEXT("VirtualAllocEx failed to allocate memory in target application"));
@@ -106,7 +112,7 @@ int main()
 	}
 	log(TEXT("VirtualAllocEx allocated memory in target application"));
 
-	//write path in process memory
+	// write path in process memory
 	if (!WriteProcessMemory(h_process, allocated_memory, dllPath, MAX_PATH, nullptr))
 	{
 		log_error(TEXT("WriteProcessMemory failed to write process memory"));

@@ -1,7 +1,8 @@
 #include "GetProcId.h"
 
-//Get process id by looking at snapshot of all loaded processes
-DWORD GetProcId(LPCTSTR processName) {
+// Get process id by looking at snapshot of all loaded processes
+DWORD GetProcId(LPCTSTR processName)
+{
     // we want the id of the process
     DWORD processId = 0;
 
@@ -9,21 +10,25 @@ DWORD GetProcId(LPCTSTR processName) {
     HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 
     // check if the snapshot is good
-    if (hSnap != INVALID_HANDLE_VALUE) {
+    if (hSnap != INVALID_HANDLE_VALUE)
+    {
 
-        //receive each process entry from snapshot
+        // receive each process entry from snapshot
         PROCESSENTRY32 procEntry;
         procEntry.dwSize = sizeof(procEntry);
 
-        if (Process32First(hSnap, &procEntry)) {//get first process
-            do {
-                //string compare (capital insensitive)
-                if (!lstrcmpi(procEntry.szExeFile, processName)) {
-                    //break if the right process is found
+        if (Process32First(hSnap, &procEntry))
+        { // get first process
+            do
+            {
+                // string compare (capital insensitive)
+                if (!lstrcmpi(procEntry.szExeFile, processName))
+                {
+                    // break if the right process is found
                     processId = procEntry.th32ProcessID;
                     break;
                 }
-            } while (Process32Next(hSnap, &procEntry)); //loop through processes
+            } while (Process32Next(hSnap, &procEntry)); // loop through processes
         }
     }
     CloseHandle(hSnap);
@@ -31,8 +36,7 @@ DWORD GetProcId(LPCTSTR processName) {
 }
 
 // Get process id by looking at window title
-void GetProcIdWindowTitle(LPCTSTR windowTitle, DWORD& processId)
+void GetProcIdWindowTitle(LPCTSTR windowTitle, DWORD &processId)
 {
     GetWindowThreadProcessId(FindWindow(NULL, windowTitle), &processId);
 }
-
