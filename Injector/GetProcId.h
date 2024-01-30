@@ -4,6 +4,6 @@
 #include <Windows.h>
 #include <TlHelp32.h>
 
-DWORD GetProcId(LPCWSTR processName);
+DWORD GetProcId(LPCTSTR processName);
 
-void GetProcIdWindowTitle(LPCWSTR windowTitle, DWORD& processId);
+void GetProcIdWindowTitle(LPCTSTR windowTitle, DWORD& processId);
