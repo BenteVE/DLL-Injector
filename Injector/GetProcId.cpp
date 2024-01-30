@@ -1,7 +1,7 @@
 #include "GetProcId.h"
 
 //Get process id by looking at snapshot of all loaded processes
-DWORD GetProcId(const char* processName) {
+DWORD GetProcId(LPCWSTR processName) {
     // we want the id of the process
     DWORD processId = 0;
 
@@ -18,7 +18,7 @@ DWORD GetProcId(const char* processName) {
         if (Process32First(hSnap, &procEntry)) {//get first process
             do {
                 //string compare (capital insensitive)
-                if (!_stricmp(procEntry.szExeFile, processName)) {
+                if (!lstrcmpiW(procEntry.szExeFile, processName)) {
                     //break if the right process is found
                     processId = procEntry.th32ProcessID;
                     break;
@@ -31,7 +31,7 @@ DWORD GetProcId(const char* processName) {
 }
 
 // Get process id by looking at window title
-void GetProcIdWindowTitle(const char* windowTitle, DWORD& processId)
+void GetProcIdWindowTitle(LPCWSTR windowTitle, DWORD& processId)
 {
     GetWindowThreadProcessId(FindWindow(NULL, windowTitle), &processId);
 }

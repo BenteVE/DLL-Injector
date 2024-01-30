@@ -8,95 +8,107 @@
 
 #include "GetProcId.h"
 
-char* ReadINI(const char* szSection, const char* szKey, const char* szDefaultValue)
+LPWSTR ReadINI(LPCWSTR lpAppName, LPCWSTR lpKeyName)
 {
-	char* szResult = new char[255];
-	memset(szResult, 0x00, 255);
-	GetPrivateProfileString(szSection, szKey,
-		szDefaultValue, szResult, 255, ".\\conf.ini");
-	return szResult;
+	LPCTSTR lpFileName = L".\\conf.ini";
+	DWORD nSize = 255;
+
+	LPWSTR lpReturnedString = new WCHAR[nSize];
+
+	GetPrivateProfileString(lpAppName, lpKeyName, NULL, lpReturnedString, nSize, lpFileName);
+
+	return lpReturnedString;
 }
 
 int main()
 {
-	// check if the settings file exists
-	if (false)
-	{
-		MessageBox(NULL, "settings file conf.ini not found", "settings file not found", NULL);
-		exit(-1);
-	}
-
-	// check if dll exists
-	char* dll = ReadINI("DLL", "PATH", NULL);
-	char dllPath[MAX_PATH];
+	// get the DLL 
+	LPWSTR dll = ReadINI(L"DLL", L"PATH");
+	LPWSTR dllPath = new WCHAR[MAX_PATH];
 	if (!GetFullPathName(dll, MAX_PATH, dllPath, nullptr))
 	{
-		MessageBox(NULL, "DLL not found", "DLL not found", NULL);
-		exit(-1);
+		std::wcout << L"Configuration Error: DLL not found" << std::endl;
+		exit(1);
 	}
 
-	char* mode = ReadINI("TARGET", "MODE", NULL);
+	LPWSTR mode = ReadINI(L"TARGET", L"MODE");
 	DWORD processId = NULL;
 
-	if (strcmp(mode, "PROCESS_ID") == 0)
+	if (lstrcmpW(mode, L"PROCESS_ID") == 0)
 	{
-		char* process_id = ReadINI("TARGET", mode, NULL);
+		LPWSTR process_id = ReadINI(L"TARGET", mode);
 		try
 		{
-			processId = std::atoi(process_id);
+			processId = std::stoi(process_id);
 		}
 		catch (const std::exception&)
 		{
-			MessageBox(NULL, "Invalid Process ID", "Configuration Error", NULL);
-			exit(-1);
+			std::wcout << L"Configuration Error: Invalid Process ID" << std::endl;
+			exit(1);
 		}
+		delete[] process_id;
 	}
-	else if (strcmp(mode, "PROCESS_NAME") == 0) {
-		char* process_name = ReadINI("TARGET", mode, NULL);
+	else if (lstrcmpW(mode, L"PROCESS_NAME") == 0) {
+		LPWSTR process_name = ReadINI(L"TARGET", mode);
 		processId = GetProcId(process_name);
+		delete[] process_name;
 	}
-	else if (strcmp(mode, "WINDOW_TITLE") == 0) {
-		char* window_title = ReadINI("TARGET", mode, NULL);
+	else if (lstrcmpW(mode, L"WINDOW_TITLE") == 0) {
+		LPWSTR window_title = ReadINI(L"TARGET", mode);
 		GetProcIdWindowTitle(window_title, processId);
+		delete[] window_title;
 	}
 	else {
-		MessageBox(NULL, "Target settings invalid", "Configuration Error", NULL);
-		exit(-1);
+		std::wcout << L"Configuration Error: Target settings invalid" << std::endl;
+		exit(1);
 	}
+
+	delete[] mode;
+
+	std::wcout << L"Acquired process ID" << std::endl;
 
 	//open process with read and write permissions
 	HANDLE h_process = OpenProcess(PROCESS_ALL_ACCESS, NULL, processId);
 	if (!h_process)
 	{
-		MessageBox(NULL, "Failed to open a handle to process", "OpenProcess", NULL);
-		exit(-1);
+		std::wcout << L"OpenProcess Error: Failed to open a handle to process" << std::endl;
+		exit(1);
 	}
+	std::wcout << L"OpenProcess: Acquired process handle" << std::endl;
 
 	//allocate memory in external process for path name (we don't need execute permissions)
 	void* allocated_memory = VirtualAllocEx(h_process, nullptr, MAX_PATH, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 	if (!allocated_memory)
 	{
-		MessageBox(NULL, "VirtualAllocEx", "Failed to allocate memory", NULL);
-		exit(-1);
+		std::wcout << L"VirtualAllocEx Error: Failed to allocate memory" << std::endl;
+		exit(1);
 	}
+	std::wcout << L"VirtualAllocEx: Allocated memory in target application" << std::endl;
 
 	//write path in process memory
-	if (!WriteProcessMemory(h_process, allocated_memory, dllPath, MAX_PATH, nullptr)) //unicode injector: Turns out WriteProcessMemory wanted DLL_NAME to be a char. converted wchar_t* to char in a new variable and now i have no problems.
+	if (!WriteProcessMemory(h_process, allocated_memory, dllPath, MAX_PATH, nullptr))
 	{
-		MessageBox(NULL, "WriteProcessMemory", "Failed to write process memory", NULL);
-		exit(-1);
+		std::wcout << L"WriteProcessMemory Error: Failed to write process memory" << std::endl;
+		exit(1);
 	}
+	std::wcout << L"WriteProcessMemory: DLL path written in memory of target application" << std::endl;
 
-	// create remote thread in target process that will call LoadLibraryA (loc = address with path to DLL)
-	HANDLE h_thread = CreateRemoteThread(h_process, nullptr, NULL, LPTHREAD_START_ROUTINE(LoadLibraryA), allocated_memory, NULL, nullptr);
+	// create remote thread in target process that will call LoadLibrary (loc = address with path to DLL)
+	HANDLE h_thread = CreateRemoteThread(h_process, nullptr, NULL, LPTHREAD_START_ROUTINE(LoadLibrary), allocated_memory, NULL, nullptr);
 	if (!h_thread)
 	{
-		MessageBox(NULL, "CreateRemoteThread", "Failed to create remote thread", NULL);
-		exit(-1);
+		std::wcout << L"CreateRemoteThread Error:Failed to create remote thread" << std::endl;
+		exit(1);
 	}
+	std::wcout << L"CreateRemoteThread: Created remote thread in target application to run LoadLibrary and load the DLL" << std::endl;
 
 	// dll is loaded, program done, close handle
-	CloseHandle(h_process);
 	VirtualFreeEx(h_process, allocated_memory, NULL, MEM_RELEASE);
-	MessageBox(0, "Successfully injected", "Success", 0);
+	CloseHandle(h_process);
+
+	delete[] dll;
+
+	std::wcout << L"Successfully injected" << std::endl;
+	system("pause");
+	exit(0);
 }
