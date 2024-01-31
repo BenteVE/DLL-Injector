@@ -5,5 +5,5 @@
 #include <TlHelp32.h>
 
 DWORD GetProcId(LPCTSTR processName);
-
-void GetProcIdWindowTitle(LPCTSTR windowTitle, DWORD& processId);
+DWORD GetProcIdWindowTitle(LPCTSTR windowTitle);
+HMODULE getLoadedModule(DWORD process_id, LPCTSTR dll);

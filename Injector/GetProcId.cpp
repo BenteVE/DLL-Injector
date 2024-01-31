@@ -36,7 +36,40 @@ DWORD GetProcId(LPCTSTR processName)
 }
 
 // Get process id by looking at window title
-void GetProcIdWindowTitle(LPCTSTR windowTitle, DWORD &processId)
+DWORD GetProcIdWindowTitle(LPCTSTR windowTitle)
 {
+    DWORD processId = 0;
     GetWindowThreadProcessId(FindWindow(NULL, windowTitle), &processId);
+    return processId;
+}
+
+HMODULE getLoadedModule(DWORD process_id, LPCTSTR dll) {
+	HMODULE mod = 0;
+
+	// create snapshot of processes
+	HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, process_id);
+
+	// check if the snapshot is good
+	if (hSnap != INVALID_HANDLE_VALUE)
+	{
+
+		// receive each process entry from snapshot
+		MODULEENTRY32 modEntry;
+		modEntry.dwSize = sizeof(modEntry);
+
+		if (Module32First(hSnap, &modEntry))
+		{ 
+			do
+			{
+				// string compare (capital insensitive)
+				if (!lstrcmpi(modEntry.szModule, dll))
+				{
+					mod = modEntry.hModule;
+					break;
+				}
+			} while (Module32Next(hSnap, &modEntry)); // loop through processes
+		}
+	}
+	CloseHandle(hSnap);
+	return mod;
 }
