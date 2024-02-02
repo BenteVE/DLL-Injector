@@ -140,6 +140,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="argparse.hpp" />
     <ClCompile Include="Injector.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="GetProcId.cpp" />
@@ -147,7 +148,6 @@
     <ClCompile Include="parser.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="cxxopts.hpp" />
     <ClInclude Include="GetProcId.h" />
     <ClInclude Include="Injector.h" />
     <ClInclude Include="logger.h" />
