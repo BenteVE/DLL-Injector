@@ -2,13 +2,9 @@
 #include "injector.h"
 #include "logger.h"
 
-#ifdef UNICODE
-#define tmain wmain
-#else
-#define tmain main
-#endif
+#include <tchar.h>
 
-int tmain(int argc, TCHAR* argv[])
+int _tmain(int argc, TCHAR* argv[])
 {
 	for (int i = 1; i < argc; i++) {
 		log(argv[i]);
