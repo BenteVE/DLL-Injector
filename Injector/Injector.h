@@ -13,7 +13,7 @@ private:
 	LPVOID allocated_memory;
 
 public:
-	Injector();
+	Injector(LPTSTR, DWORD);
 	~Injector();
 
 	BOOL inject();

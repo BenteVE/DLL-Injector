@@ -1,10 +1,27 @@
 #include "parser.h"
 #include "injector.h"
+#include "logger.h"
 
-int main()
+#ifdef UNICODE
+#define tmain wmain
+#else
+#define tmain main
+#endif
+
+int tmain(int argc, TCHAR* argv[])
 {
-	
-	Injector injector;
+	for (int i = 1; i < argc; i++) {
+		log(argv[i]);
+	}
+
+	DWORD processId = 0;
+
+	if (processId == 0) {
+		system("pause");
+		exit(1);
+	}
+
+	Injector injector(NULL, processId);
 
 	if (!injector.initialize()) {
 		system("pause");
@@ -27,5 +44,5 @@ int main()
 		exit(1);
 	}
 
-	system("pause");	
+	system("pause");
 }

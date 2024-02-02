@@ -6,4 +6,6 @@
 #include "GetProcId.h"
 #include <string>
 
-#include "argparse.hpp"
+#include "Injector.h"
+
+void processArguments();

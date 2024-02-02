@@ -1,8 +1,8 @@
 #include "Injector.h"
 
-Injector::Injector() {
-	dllPath = TEXT("");
-	processId = 0;
+Injector::Injector(LPTSTR dllPath, DWORD processId) {
+	this->dllPath = dllPath;
+	this->processId = processId;
 	
 	h_process = 0;
 	allocated_memory = nullptr;
