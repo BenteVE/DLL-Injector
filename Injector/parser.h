@@ -4,5 +4,13 @@
 #include "GetProcId.h"
 #include <string>
 
-BOOL getDll(LPTSTR dll, LPTSTR dllPath, DWORD szBuffer);
-DWORD getTarget();
+// undefine macros that cause errors in argparser
+#ifdef max
+#undef max
+#endif
+
+#ifdef min
+#undef min
+#endif
+
+#include "cxxopts.hpp"

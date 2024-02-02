@@ -3,17 +3,13 @@
 
 int main()
 {
-	// get values from parser
-	LPTSTR dllName = new TCHAR[MAX_PATH];
-	LPTSTR dllPath = new TCHAR[MAX_PATH];
-	if (!getDll(dllName, dllPath, MAX_PATH)) {
+
+	Injector injector;
+
+	if (!injector.initialize()) {
 		system("pause");
 		exit(1);
 	}
-
-	DWORD processId = getTarget();
-
-	Injector injector(dllName, dllPath, processId);
 
 	// inject
 	if (!injector.inject()) {
@@ -31,9 +27,5 @@ int main()
 		exit(1);
 	}
 
-	system("pause");
-
-	// clean
-	delete[] dllName;
-	delete[] dllPath;
+	system("pause");	
 }

@@ -1,9 +1,8 @@
 #include "Injector.h"
 
-Injector::Injector(LPTSTR dllName, LPTSTR dllPath, DWORD processId) {
-	this->dllName = dllName;
-	this->dllPath = dllPath;
-	this->processId = processId;
+Injector::Injector() {
+	dllPath = TEXT("");
+	processId = 0;
 	
 	h_process = 0;
 	allocated_memory = nullptr;
@@ -55,7 +54,7 @@ BOOL Injector::inject() {
 
 BOOL Injector::eject() {
 	// Find the module handle of the injected DLL
-	HMODULE mod = getLoadedModule(processId, dllName);
+	HMODULE mod = getLoadedModule(processId, dllPath);
 
 	HANDLE h_thread = CreateRemoteThread(h_process, nullptr, NULL, LPTHREAD_START_ROUTINE(FreeLibrary), mod, NULL, nullptr);
 	if (!h_thread)
@@ -65,5 +64,9 @@ BOOL Injector::eject() {
 	}
 	CloseHandle(h_thread);
 	log(TEXT("CreateRemoteThread created remote thread in target application to run FreeLibrary and unload the DLL"));
+	return TRUE;
+}
+
+BOOL Injector::initialize() {
 	return TRUE;
 }

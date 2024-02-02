@@ -6,7 +6,6 @@
 
 class Injector {
 private:
-	LPCTSTR dllName;
 	LPCTSTR dllPath;
 	DWORD processId;
 
@@ -14,9 +13,10 @@ private:
 	LPVOID allocated_memory;
 
 public:
-	Injector(LPTSTR, LPTSTR, DWORD);
+	Injector();
 	~Injector();
 
 	BOOL inject();
 	BOOL eject();
+	BOOL initialize();
 };
