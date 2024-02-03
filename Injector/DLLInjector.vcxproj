@@ -145,13 +145,11 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="GetProcId.cpp" />
     <ClCompile Include="logger.cpp" />
-    <ClCompile Include="parser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GetProcId.h" />
     <ClInclude Include="Injector.h" />
     <ClInclude Include="logger.h" />
-    <ClInclude Include="parser.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

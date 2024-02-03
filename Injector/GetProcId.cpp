@@ -62,7 +62,7 @@ HMODULE getLoadedModule(DWORD process_id, LPCTSTR dll) {
 			do
 			{
 				// string compare (capital insensitive)
-				if (!lstrcmpi(modEntry.szModule, dll))
+				if (!lstrcmpi(modEntry.szExePath, dll))
 				{
 					mod = modEntry.hModule;
 					break;

@@ -1,9 +1,10 @@
 #include "Injector.h"
 
-Injector::Injector(LPTSTR dllPath, DWORD processId) {
-	this->dllPath = dllPath;
-	this->processId = processId;
-	
+
+Injector::Injector() {
+	dllPath = new TCHAR[MAX_PATH];
+	processId = 0;
+
 	h_process = 0;
 	allocated_memory = nullptr;
 }
@@ -67,6 +68,46 @@ BOOL Injector::eject() {
 	return TRUE;
 }
 
-BOOL Injector::initialize() {
+BOOL Injector::setDllPath(LPTSTR dllPath) {
+	if (!GetFullPathName(dllPath, MAX_PATH, this->dllPath, nullptr))
+	{
+		log_error(TEXT("DLL not found"));
+		return FALSE;
+	}
+	else {
+		return TRUE;
+	}
+}
+
+BOOL Injector::setProcessId(LPTSTR identificationMethod, LPTSTR targetArgument) {
+	// Perform action based on identification method
+	if (lstrcmp(identificationMethod, TEXT("process_id")) == 0) {
+		try {
+			processId = std::stoi(targetArgument);
+			// Your logic for process_id
+		}
+		catch (const std::exception&) {
+			log_error(TEXT("Invalid process ID. Please provide a valid integer."));
+			return FALSE;
+		}
+	}
+	else if (lstrcmp(identificationMethod, TEXT("process_name")) == 0) {
+		processId = GetProcId(targetArgument);
+		if (processId == 0) {
+			return FALSE;
+		}
+	}
+	else if (lstrcmp(identificationMethod, TEXT("window_title")) == 0) {
+		processId = GetProcIdWindowTitle(targetArgument);
+		if (processId == 0) {
+			return FALSE;
+		}
+	}
+	else {
+		log_error(TEXT("Invalid identification method. Options: process_id, process_name, window_title."));
+		return FALSE;
+	}
+
+	log(TEXT("Acquired ProcessId"));
 	return TRUE;
 }

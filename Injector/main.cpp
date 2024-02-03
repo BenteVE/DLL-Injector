@@ -1,25 +1,23 @@
-#include "parser.h"
 #include "injector.h"
 #include "logger.h"
 
-#include <tchar.h>
+#include <tchar.h> // using _tmain macro
 
 int _tmain(int argc, TCHAR* argv[])
 {
-	for (int i = 1; i < argc; i++) {
-		log(argv[i]);
+
+	if (argc == 2 && argv[1] == TEXT("--help")) {
+		displayHelp();
+		return 0;
+	}
+	else if (argc != 4) {
+		displayHelp();
+		return 1;
 	}
 
-	DWORD processId = 0;
+	Injector injector;	
 
-	if (processId == 0) {
-		system("pause");
-		exit(1);
-	}
-
-	Injector injector(NULL, processId);
-
-	if (!injector.initialize()) {
+	if (!injector.setDllPath(argv[1]) || !injector.setProcessId(argv[2], argv[3])) {
 		system("pause");
 		exit(1);
 	}

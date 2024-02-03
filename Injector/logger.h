@@ -10,3 +10,4 @@
 
 void log(LPCTSTR message);
 void log_error(LPCTSTR error);
+void displayHelp();
