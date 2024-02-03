@@ -12,6 +12,7 @@ Injector::Injector() {
 Injector::~Injector() {
 	VirtualFreeEx(h_process, allocated_memory, NULL, MEM_RELEASE);
 	CloseHandle(h_process);
+	delete[] dllPath;
 }
 
 BOOL Injector::inject() {
@@ -69,12 +70,16 @@ BOOL Injector::eject() {
 }
 
 BOOL Injector::setDllPath(LPTSTR dllPath) {
-	if (!GetFullPathName(dllPath, MAX_PATH, this->dllPath, nullptr))
+	GetFullPathName(dllPath, MAX_PATH, this->dllPath, nullptr);
+	if (GetFileAttributes(this->dllPath) == INVALID_FILE_ATTRIBUTES)
 	{
-		log_error(TEXT("DLL not found"));
+		log_error(TEXT("No DLL found at path:"));
+		log_error(this->dllPath);
 		return FALSE;
 	}
 	else {
+		log(TEXT("Found DLL"));
+		tcout << this->dllPath << std::endl;
 		return TRUE;
 	}
 }
@@ -94,12 +99,14 @@ BOOL Injector::setProcessId(LPTSTR identificationMethod, LPTSTR targetArgument) 
 	else if (lstrcmp(identificationMethod, TEXT("process_name")) == 0) {
 		processId = GetProcId(targetArgument);
 		if (processId == 0) {
+			log_error(TEXT("Unable to find provided process"));
 			return FALSE;
 		}
 	}
 	else if (lstrcmp(identificationMethod, TEXT("window_title")) == 0) {
 		processId = GetProcIdWindowTitle(targetArgument);
 		if (processId == 0) {
+			log_error(TEXT("Unable to find provided window"));
 			return FALSE;
 		}
 	}
