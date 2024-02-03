@@ -11,8 +11,8 @@ void log_error(LPCTSTR error)
 }
 
 void displayHelp() {
-	std::wcout
-		<< TEXT("Usage: YourProgramName <dll_path> <identification_method> <target_argument>\n")
+	tcout
+		<< TEXT("Usage: ./DLLInjector.exe <dll_path> <identification_method> <target_argument>\n")
 		<< TEXT("\nArguments:\n")
 		<< TEXT("  <dll_path>:      Path to the .dll file to be injected.\n")
 		<< TEXT("  <identification_method>:   Method to identify the target application.\n")
