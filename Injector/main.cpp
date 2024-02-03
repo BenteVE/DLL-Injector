@@ -2,6 +2,7 @@
 #include "logger.h"
 
 #include <tchar.h> // using _tmain macro
+#include <conio.h> // using _getch
 
 int _tmain(int argc, TCHAR* argv[])
 {
@@ -18,25 +19,29 @@ int _tmain(int argc, TCHAR* argv[])
 	Injector injector;	
 
 	if (!injector.setDllPath(argv[1]) || !injector.setProcessId(argv[2], argv[3])) {
-		system("pause");
-		exit(1);
+		return 1;
 	}
 
-	// inject
+	log(TEXT("Injecting..."));
 	if (!injector.inject()) {
-		system("pause");
-		exit(1);
+		return 1;
 	}
 
-	// wait for ejection
-	log(TEXT("Press any key to unload the DLL"));
-	system("pause");
-
-	// eject
-	if (!injector.eject()) {
-		system("pause");
-		exit(1);
+	tcout << TEXT("Press 'Q' to quit of 'E' to eject the dll") << std::endl;
+	int ch = ' ';
+	while (ch != 'Q' && ch != 'E') {
+		ch = _gettch();
+		ch = toupper(ch);
 	}
 
-	system("pause");
+	if (ch == 'E') {
+		log(TEXT("Ejecting..."));
+		if (!injector.eject()) {
+			return 1;
+		}
+	}
+	else if (ch == 'Q'){
+		return 0;
+	}
+	
 }
