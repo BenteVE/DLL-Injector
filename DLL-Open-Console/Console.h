@@ -4,14 +4,12 @@
 #include <iostream>
 
 class Console {
-private:
+public:
 	// Pointer to the opened stream
 	FILE* stream;
 
-public:
 	Console();
 	~Console();
 
 	BOOL open();
-	void log(const char*);
 };

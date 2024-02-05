@@ -3,7 +3,7 @@
 Console console;
 
 DWORD WINAPI testThread(PVOID base) {
-	console.log("DLL loaded.\n");
+	fprintf(console.stream, "DLL loaded.\n");
 	return 0;
 }
 

@@ -32,7 +32,3 @@ BOOL Console::open() {
 
 	return TRUE;
 }
-
-void Console::log(const char* message) {
-	fprintf(stream, message);
-}
