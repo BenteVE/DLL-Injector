@@ -43,6 +43,7 @@ DWORD GetProcIdWindowTitle(LPCTSTR windowTitle)
     return processId;
 }
 
+// Also possible with EnumProcessModules
 HMODULE getLoadedModule(DWORD process_id, LPCTSTR dll) {
 	HMODULE mod = 0;
 
