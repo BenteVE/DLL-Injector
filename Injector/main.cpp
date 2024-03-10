@@ -27,7 +27,7 @@ int _tmain(int argc, TCHAR* argv[])
 		return 1;
 	}
 
-	tcout << TEXT("Press 'Q' to quit of 'E' to eject the dll") << std::endl;
+	tcout << TEXT("Press 'Q' to quit or 'E' to eject the dll") << std::endl;
 	int ch = ' ';
 	while (ch != 'Q' && ch != 'E') {
 		ch = _gettch();
