@@ -7,7 +7,7 @@
 int _tmain(int argc, TCHAR* argv[])
 {
 
-	if (argc == 2 && argv[1] == TEXT("--help")) {
+	if (argc == 2 && _tcscmp(argv[1], TEXT("--help")) == 0) {
 		displayHelp();
 		return 0;
 	}
