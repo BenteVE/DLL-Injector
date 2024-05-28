@@ -44,33 +44,34 @@ DWORD GetProcIdWindowTitle(LPCTSTR windowTitle)
 }
 
 // Also possible with EnumProcessModules
-HMODULE getLoadedModule(DWORD process_id, LPCTSTR dll) {
-	HMODULE mod = 0;
+HMODULE getLoadedModule(DWORD process_id, LPCTSTR dll)
+{
+    HMODULE mod = 0;
 
-	// create snapshot of processes
-	HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, process_id);
+    // create snapshot of processes
+    HANDLE hSnap = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, process_id);
 
-	// check if the snapshot is good
-	if (hSnap != INVALID_HANDLE_VALUE)
-	{
+    // check if the snapshot is good
+    if (hSnap != INVALID_HANDLE_VALUE)
+    {
 
-		// receive each process entry from snapshot
-		MODULEENTRY32 modEntry;
-		modEntry.dwSize = sizeof(modEntry);
+        // receive each process entry from snapshot
+        MODULEENTRY32 modEntry;
+        modEntry.dwSize = sizeof(modEntry);
 
-		if (Module32First(hSnap, &modEntry))
-		{ 
-			do
-			{
-				// string compare (capital insensitive)
-				if (!lstrcmpi(modEntry.szExePath, dll))
-				{
-					mod = modEntry.hModule;
-					break;
-				}
-			} while (Module32Next(hSnap, &modEntry)); // loop through processes
-		}
-	}
-	CloseHandle(hSnap);
-	return mod;
+        if (Module32First(hSnap, &modEntry))
+        {
+            do
+            {
+                // string compare (capital insensitive)
+                if (!lstrcmpi(modEntry.szExePath, dll))
+                {
+                    mod = modEntry.hModule;
+                    break;
+                }
+            } while (Module32Next(hSnap, &modEntry)); // loop through processes
+        }
+    }
+    CloseHandle(hSnap);
+    return mod;
 }

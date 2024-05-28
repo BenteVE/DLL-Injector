@@ -1,7 +1,7 @@
 #include "Injector.h"
 
-
-Injector::Injector() {
+Injector::Injector()
+{
 	dllPath = new TCHAR[MAX_PATH];
 	processId = 0;
 
@@ -9,13 +9,15 @@ Injector::Injector() {
 	allocated_memory = nullptr;
 }
 
-Injector::~Injector() {
+Injector::~Injector()
+{
 	VirtualFreeEx(h_process, allocated_memory, NULL, MEM_RELEASE);
 	CloseHandle(h_process);
 	delete[] dllPath;
 }
 
-BOOL Injector::inject() {
+BOOL Injector::inject()
+{
 	// open process with read and write permissions
 	h_process = OpenProcess(PROCESS_ALL_ACCESS, NULL, processId);
 	if (!h_process)
@@ -54,7 +56,8 @@ BOOL Injector::inject() {
 	return TRUE;
 }
 
-BOOL Injector::eject() {
+BOOL Injector::eject()
+{
 	// Find the module handle of the injected DLL
 	HMODULE mod = getLoadedModule(processId, dllPath);
 
@@ -69,7 +72,8 @@ BOOL Injector::eject() {
 	return TRUE;
 }
 
-BOOL Injector::setDllPath(LPTSTR dllPath) {
+BOOL Injector::setDllPath(LPTSTR dllPath)
+{
 	GetFullPathName(dllPath, MAX_PATH, this->dllPath, nullptr);
 	if (GetFileAttributes(this->dllPath) == INVALID_FILE_ATTRIBUTES)
 	{
@@ -77,41 +81,51 @@ BOOL Injector::setDllPath(LPTSTR dllPath) {
 		log_error(this->dllPath);
 		return FALSE;
 	}
-	else {
+	else
+	{
 		log(TEXT("Found DLL"));
 		tcout << this->dllPath << std::endl;
 		return TRUE;
 	}
 }
 
-BOOL Injector::setProcessId(LPTSTR identificationMethod, LPTSTR targetArgument) {
+BOOL Injector::setProcessId(LPTSTR identificationMethod, LPTSTR targetArgument)
+{
 	// Perform action based on identification method
-	if (lstrcmp(identificationMethod, TEXT("process_id")) == 0) {
-		try {
+	if (lstrcmp(identificationMethod, TEXT("--process-id")) == 0)
+	{
+		try
+		{
 			processId = std::stoi(targetArgument);
-			// Your logic for process_id
+			// Your logic for --process-id
 		}
-		catch (const std::exception&) {
+		catch (const std::exception &)
+		{
 			log_error(TEXT("Invalid process ID. Please provide a valid integer."));
 			return FALSE;
 		}
 	}
-	else if (lstrcmp(identificationMethod, TEXT("process_name")) == 0) {
+	else if (lstrcmp(identificationMethod, TEXT("--process-name")) == 0)
+	{
 		processId = GetProcId(targetArgument);
-		if (processId == 0) {
+		if (processId == 0)
+		{
 			log_error(TEXT("Unable to find provided process"));
 			return FALSE;
 		}
 	}
-	else if (lstrcmp(identificationMethod, TEXT("window_title")) == 0) {
+	else if (lstrcmp(identificationMethod, TEXT("--window-title")) == 0)
+	{
 		processId = GetProcIdWindowTitle(targetArgument);
-		if (processId == 0) {
+		if (processId == 0)
+		{
 			log_error(TEXT("Unable to find provided window"));
 			return FALSE;
 		}
 	}
-	else {
-		log_error(TEXT("Invalid identification method. Options: process_id, process_name, window_title."));
+	else
+	{
+		log_error(TEXT("Invalid identification method. Options: --process-id, --process-name, --window-title."));
 		return FALSE;
 	}
 

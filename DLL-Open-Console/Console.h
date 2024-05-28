@@ -3,10 +3,11 @@
 #include <Windows.h>
 #include <iostream>
 
-class Console {
+class Console
+{
 public:
 	// Pointer to the opened stream
-	FILE* stream;
+	FILE *stream;
 
 	Console();
 	~Console();

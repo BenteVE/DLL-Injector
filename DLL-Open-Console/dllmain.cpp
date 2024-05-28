@@ -2,7 +2,8 @@
 
 Console console;
 
-DWORD WINAPI testThread(PVOID base) {
+DWORD WINAPI testThread(PVOID base)
+{
 	fprintf(console.stream, "DLL loaded.\n");
 	return 0;
 }
@@ -12,7 +13,8 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserv
 	switch (ul_reason_for_call)
 	{
 	case DLL_PROCESS_ATTACH:
-		if (!console.open()) {
+		if (!console.open())
+		{
 			// Indicate DLL loading failed
 			return FALSE;
 		}

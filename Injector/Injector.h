@@ -5,7 +5,8 @@
 #include "GetProcId.h"
 #include <string> //using stoi
 
-class Injector {
+class Injector
+{
 private:
 	LPTSTR dllPath;
 	DWORD processId;

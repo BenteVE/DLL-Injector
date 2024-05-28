@@ -1,18 +1,22 @@
 #include "Console.h"
 
 // Open console for debugging
-Console::Console() {
+Console::Console()
+{
 	stream = NULL;
 }
 
-Console::~Console() {
-	if (stream != NULL) {
+Console::~Console()
+{
+	if (stream != NULL)
+	{
 		fclose(stream);
 	}
 	FreeConsole();
 }
 
-BOOL Console::open() {
+BOOL Console::open()
+{
 
 	if (!AllocConsole())
 	{
